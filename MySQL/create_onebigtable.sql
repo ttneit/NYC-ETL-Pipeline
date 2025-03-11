@@ -1,0 +1,65 @@
+CREATE DATABASE IF NOT EXISTS nyc_datamart;
+
+USE nyc_datamart;
+
+CREATE TABLE IF NOT EXISTS monthly_report(
+    ID INT IDENTITY(1,1) PRIMARY KEY,
+    month_pu INT,
+    PU_Borough VARCHAR(50),
+    PU_Zone VARCHAR(50),
+    PU_service_zone VARCHAR(50),
+    DO_Borough VARCHAR(50),
+    DO_Zone VARCHAR(50),
+    DO_service_zone VARCHAR(50),
+    typeName VARCHAR(50),
+    VendorName VARCHAR(50),
+    payment_type VARCHAR(50),
+    RatecodeName VARCHAR(50),
+    avg_passenger_count FLOAT,
+    total_passenger_count FLOAT,
+    avg_trip_distance FLOAT,
+    total_trip_distance FLOAT,
+    avg_trip_duration FLOAT,
+    total_trip_duration FLOAT,
+    avg_tip_amount FLOAT,
+    total_tip_amount FLOAT,
+    avg_tolls_amount FLOAT,
+    total_tolls_amount FLOAT,
+    avg_total_amount FLOAT,
+    total_total_amount FLOAT,
+    avg_fare_amount FLOAT,
+    total_fare_amount FLOAT,
+    total_trips INT
+);
+
+
+CREATE TABLE IF NOT EXISTS weekly_report(
+    ID INT IDENTITY(1,1) PRIMARY KEY,
+    dayOfWeek_pu VARCHAR(50),
+    weekOfYear_pu INT,
+    PU_Borough VARCHAR(50),
+    PU_Zone VARCHAR(50),
+    PU_service_zone VARCHAR(50),
+    DO_Borough VARCHAR(50),
+    DO_Zone VARCHAR(50),
+    DO_service_zone VARCHAR(50),
+    typeName VARCHAR(50),
+    VendorName VARCHAR(50),
+    payment_type VARCHAR(50),
+    RatecodeName VARCHAR(50),
+    avg_passenger_count FLOAT,
+    total_passenger_count FLOAT,
+    avg_trip_distance FLOAT,
+    total_trip_distance FLOAT,
+    avg_trip_duration FLOAT,
+    total_trip_duration FLOAT,
+    avg_tip_amount FLOAT,
+    total_tip_amount FLOAT,
+    avg_tolls_amount FLOAT,
+    total_tolls_amount FLOAT,
+    avg_total_amount FLOAT,
+    total_total_amount FLOAT,
+    avg_fare_amount FLOAT,
+    total_fare_amount FLOAT,
+    total_trips INT
+);
