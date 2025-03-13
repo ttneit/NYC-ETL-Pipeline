@@ -71,22 +71,22 @@ def get_latest_time_pickup_dw(spark) :
     key_prefix=["gold","dim"],
     ins={
         'silver_green_taxi': AssetIn(key_prefix=['silver','green']),
-        # 'silver_yellow_taxi' : AssetIn(key_prefix=['silver','yellow'])
+        'silver_yellow_taxi' : AssetIn(key_prefix=['silver','yellow'])
     }
 )
-# def extract_vendor_table(context : AssetExecutionContext, silver_green_taxi: pd.DataFrame, silver_yellow_taxi: pd.DataFrame) :
-def extract_vendor_table(context : AssetExecutionContext, silver_green_taxi: pd.DataFrame) :
+def extract_vendor_table(context : AssetExecutionContext, silver_green_taxi: pd.DataFrame, silver_yellow_taxi: pd.DataFrame) :
+# def extract_vendor_table(context : AssetExecutionContext, silver_green_taxi: pd.DataFrame) :
     table_name = 'dim_vendor'
     mode = 'append'
 
     with initialize_spark() as spark : 
         context.log.info("Extracting the Vendor Information from silver layer")
         green_df = spark.createDataFrame(silver_green_taxi).select('VendorID').dropDuplicates()
-        # yellow_df = spark.createDataFrame(silver_yellow_taxi).select('VendorID').dropDuplicates()
+        yellow_df = spark.createDataFrame(silver_yellow_taxi).select('VendorID').dropDuplicates()
 
-        # new_dim_vendor_df = yellow_df.union(green_df).dropDuplicates().sort('VendorID')
+        new_dim_vendor_df = yellow_df.union(green_df).dropDuplicates().sort('VendorID')
 
-        new_dim_vendor_df = green_df.dropDuplicates().sort('VendorID')
+        # new_dim_vendor_df = green_df.dropDuplicates().sort('VendorID')
         context.log.info("Extracting the Vendor Information from Data Warehouse")
         previous_vendor_df = read_mysql_table(spark,table_name)
         new_dim_vendor_df = new_dim_vendor_df.withColumnRenamed('VendorID','VendorID_new')
@@ -130,11 +130,11 @@ def extract_vendor_table(context : AssetExecutionContext, silver_green_taxi: pd.
     key_prefix=['gold','dim'],
     ins={
         'silver_green_taxi' : AssetIn(key_prefix=['silver','green']),
-        # 'silver_yellow_taxi' : AssetIn(key_prefix=['silver','yellow']),
+        'silver_yellow_taxi' : AssetIn(key_prefix=['silver','yellow']),
     }
 )
-# def extract_payment_information(context: AssetExecutionContext, silver_green_taxi : pd.DataFrame, silver_yellow_taxi: pd.DataFrame) :
-def extract_payment_information(context: AssetExecutionContext, silver_green_taxi : pd.DataFrame) :
+def extract_payment_information(context: AssetExecutionContext, silver_green_taxi : pd.DataFrame, silver_yellow_taxi: pd.DataFrame) :
+# def extract_payment_information(context: AssetExecutionContext, silver_green_taxi : pd.DataFrame) :
     table_name = 'dim_payment'
     mode = 'append'
 
@@ -142,10 +142,10 @@ def extract_payment_information(context: AssetExecutionContext, silver_green_tax
     with initialize_spark() as spark : 
         context.log.info("Extracting Payment information from silver layer")
         green_df = spark.createDataFrame(silver_green_taxi).select('payment_type').dropDuplicates()
-        # yellow_df = spark.createDataFrame(silver_yellow_taxi).select('payment_type').dropDuplicates()
+        yellow_df = spark.createDataFrame(silver_yellow_taxi).select('payment_type').dropDuplicates()
 
-        # new_payment_df = green_df.union(yellow_df).dropDuplicates().sort('payment_type')
-        new_payment_df = green_df.dropDuplicates().sort('payment_type')
+        new_payment_df = green_df.union(yellow_df).dropDuplicates().sort('payment_type')
+        # new_payment_df = green_df.dropDuplicates().sort('payment_type')
         context.log.info("Extracting Payment information from Data Warehouse")
         old_payment_df = read_mysql_table(spark,table_name)
 
@@ -189,21 +189,21 @@ def extract_payment_information(context: AssetExecutionContext, silver_green_tax
     key_prefix=['gold','dim'],
     ins={
         'silver_green_taxi': AssetIn(key_prefix=['silver','green']),
-        # 'silver_yellow_taxi': AssetIn(key_prefix=['silver','yellow']),
+        'silver_yellow_taxi': AssetIn(key_prefix=['silver','yellow']),
     }
 )
-# def extract_rate_information(context: AssetExecutionContext, silver_green_taxi: pd.DataFrame, silver_yellow_taxi: pd.DataFrame) :
-def extract_rate_information(context: AssetExecutionContext, silver_green_taxi: pd.DataFrame) :
+def extract_rate_information(context: AssetExecutionContext, silver_green_taxi: pd.DataFrame, silver_yellow_taxi: pd.DataFrame) :
+# def extract_rate_information(context: AssetExecutionContext, silver_green_taxi: pd.DataFrame) :
     table_name = 'dim_rate'
     mode = 'append'
 
     with initialize_spark() as spark : 
         context.log.info(f'Extracting Rate Dimension Table from silver layer')
         green_df = spark.createDataFrame(silver_green_taxi).select('RatecodeID').dropDuplicates()
-        # yellow_df = spark.createDataFrame(silver_yellow_taxi).select('RatecodeID').dropDuplicates()
+        yellow_df = spark.createDataFrame(silver_yellow_taxi).select('RatecodeID').dropDuplicates()
 
-        # new_rate_df = green_df.union(yellow_df).dropDuplicates().sort('RatecodeID')
-        new_rate_df = green_df.dropDuplicates().sort('RatecodeID')
+        new_rate_df = green_df.union(yellow_df).dropDuplicates().sort('RatecodeID')
+        # new_rate_df = green_df.dropDuplicates().sort('RatecodeID')
         context.log.info('Extracting Rate information from Data Warehouse')
         previous_rate_df = read_mysql_table(spark,table_name)
 
@@ -250,7 +250,7 @@ def extract_rate_information(context: AssetExecutionContext, silver_green_taxi: 
         'extract_payment_information': AssetIn(key_prefix=['gold','dim']),
         'extract_vendor_table': AssetIn(key_prefix=['gold','dim']),
         'silver_green_taxi': AssetIn(key_prefix=['silver','green']),
-        # 'silver_yellow_taxi': AssetIn(key_prefix=['silver','yellow']),
+        'silver_yellow_taxi': AssetIn(key_prefix=['silver','yellow']),
     }
 )
 def insert_fact_table(
@@ -259,7 +259,7 @@ def insert_fact_table(
     extract_payment_information: pd.DataFrame,
     extract_vendor_table: pd.DataFrame,
     silver_green_taxi: pd.DataFrame,
-    # silver_yellow_taxi: pd.DataFrame
+    silver_yellow_taxi: pd.DataFrame
 ):
     table_name = 'fact_nyc'
     mode = 'append'
@@ -268,10 +268,10 @@ def insert_fact_table(
             raise RuntimeError("SparkSession initialization failed!")
         context.log.info("Extracting data from silver layer")
         green_df = spark.createDataFrame(silver_green_taxi)
-        # yellow_df = spark.createDataFrame(silver_yellow_taxi)
+        yellow_df = spark.createDataFrame(silver_yellow_taxi)
         
-        # full_df = green_df.union(yellow_df)
-        full_df = green_df
+        full_df = green_df.union(yellow_df)
+        # full_df = green_df
         latest_time = get_latest_time_pickup_dw(spark)
         print(f"latest_time: {latest_time}, Type: {type(latest_time)}")
 

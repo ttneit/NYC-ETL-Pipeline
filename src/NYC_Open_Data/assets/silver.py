@@ -103,56 +103,56 @@ def silver_green_taxi(context : AssetExecutionContext, bronze_green_taxi : pd.Da
     )
 
 
-# @asset(
-#     description="Cleanse and Transform Yellow Taxi Data",
-#     partitions_def=MonthlyPartitionsDefinition(start_date="2023-01-01",end_date="2024-01-01"),
-#     group_name="silver",
-#     key_prefix=["silver","yellow"],
-#     ins={
-#         'bronze_yellow_taxi':AssetIn(key_prefix=['bronze','yellow'])
-#     }
-# )
-# def silver_yellow_taxi(context : AssetExecutionContext, bronze_yellow_taxi : pd.DataFrame) : 
-#     partition_str = context.partition_key
-#     month_to_cleanse = partition_str[:-3]
-#     context.log.info(f"Cleanse and Transform {month_to_cleanse}.parquet from Bronze Layer ")
-#     client = Minio('localhost:9000',
-#         access_key="oiwyHMjuq2toBimR9SoZ",
-#         secret_key="FU90MZ5jviZnrp8o4mG4Y1gnYUhi7euMxgMUtsuP",
-#         secure=False)
-#     with initialize_spark() as spark : 
-#         df = spark.createDataFrame(bronze_yellow_taxi)
-#         selected_df = df.select('VendorID', 'tpep_pickup_datetime', 'tpep_dropoff_datetime','PULocationID'
-#                                 ,'DOLocationID','RatecodeID','passenger_count', 'trip_distance','fare_amount'
-#                                 ,'extra','mta_tax','tip_amount','tolls_amount','improvement_surcharge', 'total_amount'
-#                                 ,'payment_type','congestion_surcharge','airport_fee')
-#         selected_df = selected_df.dropDuplicates()
-#         selected_df = selected_df.withColumn('tpep_pickup_datetime', sf.to_timestamp('tpep_pickup_datetime', 'yyyy-MM-dd HH:mm:ss'))
-#         selected_df = selected_df.withColumn('tpep_dropoff_datetime', sf.to_timestamp('tpep_dropoff_datetime', 'yyyy-MM-dd HH:mm:ss'))
-#         selected_df = selected_df.withColumnRenamed('tpep_pickup_datetime','pickup_datetime')
-#         selected_df = selected_df.withColumnRenamed('tpep_dropoff_datetime','dropoff_datetime')
-#         selected_df = selected_df.withColumn('taxi_type',sf.lit('Yellow'))
-#         selected_df = selected_df.withColumn('RatecodeID',sf.col('RatecodeID').cast(IntegerType()))
-#         selected_df = selected_df.withColumn('passenger_count',sf.col('passenger_count').cast(IntegerType()))
-#         selected_df = selected_df.withColumn('payment_type',sf.col('payment_type').cast(IntegerType()))
+@asset(
+    description="Cleanse and Transform Yellow Taxi Data",
+    partitions_def=MonthlyPartitionsDefinition(start_date="2023-01-01",end_date="2024-01-01"),
+    group_name="silver",
+    key_prefix=["silver","yellow"],
+    ins={
+        'bronze_yellow_taxi':AssetIn(key_prefix=['bronze','yellow'])
+    }
+)
+def silver_yellow_taxi(context : AssetExecutionContext, bronze_yellow_taxi : pd.DataFrame) : 
+    partition_str = context.partition_key
+    month_to_cleanse = partition_str[:-3]
+    context.log.info(f"Cleanse and Transform {month_to_cleanse}.parquet from Bronze Layer ")
+    client = Minio('localhost:9000',
+        access_key="oiwyHMjuq2toBimR9SoZ",
+        secret_key="FU90MZ5jviZnrp8o4mG4Y1gnYUhi7euMxgMUtsuP",
+        secure=False)
+    with initialize_spark() as spark : 
+        df = spark.createDataFrame(bronze_yellow_taxi)
+        selected_df = df.select('VendorID', 'tpep_pickup_datetime', 'tpep_dropoff_datetime','PULocationID'
+                                ,'DOLocationID','RatecodeID','passenger_count', 'trip_distance','fare_amount'
+                                ,'extra','mta_tax','tip_amount','tolls_amount','improvement_surcharge', 'total_amount'
+                                ,'payment_type','congestion_surcharge','airport_fee')
+        selected_df = selected_df.dropDuplicates()
+        selected_df = selected_df.withColumn('tpep_pickup_datetime', sf.to_timestamp('tpep_pickup_datetime', 'yyyy-MM-dd HH:mm:ss'))
+        selected_df = selected_df.withColumn('tpep_dropoff_datetime', sf.to_timestamp('tpep_dropoff_datetime', 'yyyy-MM-dd HH:mm:ss'))
+        selected_df = selected_df.withColumnRenamed('tpep_pickup_datetime','pickup_datetime')
+        selected_df = selected_df.withColumnRenamed('tpep_dropoff_datetime','dropoff_datetime')
+        selected_df = selected_df.withColumn('taxi_type',sf.lit('Yellow'))
+        selected_df = selected_df.withColumn('RatecodeID',sf.col('RatecodeID').cast(IntegerType()))
+        selected_df = selected_df.withColumn('passenger_count',sf.col('passenger_count').cast(IntegerType()))
+        selected_df = selected_df.withColumn('payment_type',sf.col('payment_type').cast(IntegerType()))
 
-#         selected_df = selected_df.withColumn('total_surcharges', sf.col('mta_tax')+ sf.col('extra') + sf.col('improvement_surcharge') + sf.col('congestion_surcharge'))
-#         selected_df = selected_df.drop('extra','mta_tax','improvement_surcharge','congestion_surcharge')
-#         write_to_minio(selected_df,"lakehouse",client,f"silver/yellow_data/{month_to_cleanse}")
-#         context.log.info(f"Write {month_to_cleanse}.parquet to bucket lakehouse in Minio successfully")
-#         os.makedirs("data/staging/silver/yellow_data",exist_ok=True)
-#         selected_df.write.mode("overwrite").parquet(f'data/staging/silver/yellow_data/{month_to_cleanse}.parquet')
-#         selected_df.unpersist()
-#         context.log.info(f"Write {month_to_cleanse}.parquet to data/staging/silver/yellow_data")
-#         # pandas_df = selected_df.toPandas()
+        selected_df = selected_df.withColumn('total_surcharges', sf.col('mta_tax')+ sf.col('extra') + sf.col('improvement_surcharge') + sf.col('congestion_surcharge'))
+        selected_df = selected_df.drop('extra','mta_tax','improvement_surcharge','congestion_surcharge')
+        write_to_minio(selected_df,"lakehouse",client,f"silver/yellow_data/{month_to_cleanse}")
+        context.log.info(f"Write {month_to_cleanse}.parquet to bucket lakehouse in Minio successfully")
+        os.makedirs("data/staging/silver/yellow_data",exist_ok=True)
+        selected_df.write.mode("overwrite").parquet(f'data/staging/silver/yellow_data/{month_to_cleanse}.parquet')
+        selected_df.unpersist()
+        context.log.info(f"Write {month_to_cleanse}.parquet to data/staging/silver/yellow_data")
+        # pandas_df = selected_df.toPandas()
 
-#     pandas_df = pd.read_parquet(f"data/staging/silver/yellow_data/{month_to_cleanse}.parquet")
-#     return Output(
-#         value=pandas_df,
-#         metadata={
-#             'table': 'yellow_taxi',
-#             'Number of rows :': pandas_df.shape[0],
-#             'Number of columns :' : pandas_df.shape[1],
-#             'Columns' : pandas_df.columns.tolist()
-#         }
-#     )
+    pandas_df = pd.read_parquet(f"data/staging/silver/yellow_data/{month_to_cleanse}.parquet")
+    return Output(
+        value=pandas_df,
+        metadata={
+            'table': 'yellow_taxi',
+            'Number of rows :': pandas_df.shape[0],
+            'Number of columns :' : pandas_df.shape[1],
+            'Columns' : pandas_df.columns.tolist()
+        }
+    )
