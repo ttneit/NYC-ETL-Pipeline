@@ -32,42 +32,21 @@ This data sources is stored in `data` directory for raw data sources
 6. Visualize data in PowerBI 
 ### Database schema
 Raw Data Sources : 
-- 
-data
-├── green
-│   ├── 2023-01.parquet
-│   ├── 2023-02.parquet
-│   ├── ...
-│   ├── 2023-11.parquet
-│   ├── 2023-12.parquet
-├── yellow
-│   ├── 2023-01.parquet
-│   ├── 2023-02.parquet
-│   ├── ...
-│   ├── 2023-11.parquet
-│   ├── 2023-12.parquet
-├── taxi_zone.csv
+- data
+    - green : inclues 12 parquet files (2023-01.parquet -> 2023-12.parquet)
+    - yellow : inclues 12 parquet files (2023-01.parquet -> 2023-12.parquet)
+    - taxi_zone.csv
 
 - Directory `green` and `yellow` include 12 parquet files for information about taxi trips in 12 months in 2023 
 - File `taxi_zone.csv` contains information about all places in New York City.
 ### Datalake structure
-- In minio :
-
-lakehouse
-├── bronze
-│   └── green_data
-│   │   ├── 2023-01.parquet
-│   │   ├── 2023-02.parquet
-│   │   ├── ...
-│   │   ├── 2023-11.parquet
-│   │   ├── 2023-12.parquet
-├── silver
-│   └── green_data
-│   │   ├── 2023-01.parquet
-│   │   ├── 2023-02.parquet
-│   │   ├── ...
-│   │   ├── 2023-11.parquet
-│   │   ├── 2023-12.parquet
+- lakehouse
+    - bronze : 
+        - green_data : inclues 12 parquet files (2023-01.parquet -> 2023-12.parquet)
+        - yellow_data : inclues 12 parquet files (2023-01.parquet -> 2023-12.parquet)
+    - silver : 
+        - green_data : inclues 12 parquet files (2023-01.parquet -> 2023-12.parquet)
+        - yellow_data : inclues 12 parquet files (2023-01.parquet -> 2023-12.parquet)
 
 1. The datalake includes 2 sub layers : bronze, silver
 2. All files are stored in parquet files for better storage than csv file
@@ -88,8 +67,8 @@ lakehouse
 
 ![Bronze](images\bronze.png)
 
-- `bronze_green_taxi` : Load parquet file from `green_taxi` directory to Object Storage
-- `bronze_yellow_taxi` : Load parquet file from `yellow_taxi` directory to Object Storage
+- `bronze_green_taxi` : Load parquet file from `green_taxi` directory to datalake
+- `bronze_yellow_taxi` : Load parquet file from `yellow_taxi` directory to datalake
 - Assets in this layer 12 partitions for better processing performance and reducing the running time
 
 4. Silver Layer
