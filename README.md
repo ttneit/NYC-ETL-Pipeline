@@ -55,17 +55,17 @@ Raw Data Sources :
 ### Data lineage
 1. General 
 
-![General](images\overview.png)
+![General](images/overview.png)
 
 2. Raw layer
 
-![Raw](images\raw.png)
+![Raw](images/raw.png)
 
 - The target of this layer : download data from website and store in local
 - This layer is optional (Can use directly from `data` directory)
 3. Bronze Layer
 
-![Bronze](images\bronze.png)
+![Bronze](images/bronze.png)
 
 - `bronze_green_taxi` : Load parquet file from `green_taxi` directory to datalake
 - `bronze_yellow_taxi` : Load parquet file from `yellow_taxi` directory to datalake
@@ -73,7 +73,7 @@ Raw Data Sources :
 
 4. Silver Layer
 
-![Silver](images\silver.png)
+![Silver](images/silver.png)
 
 - Receive corresponding partition from Bronze layer then :
     - `silver_green_taxi` : Extract needed columns, deduplicate data,rename datetime column, fill nan values, create new columns for `taxi_type`, `trip_duration` 
@@ -82,7 +82,7 @@ Raw Data Sources :
 
 5. Gold Layer
 
-![Gold](images\gold.png)
+![Gold](images/gold.png)
 
 - Receive corresponding partition from Silver layer then :
     - Data will be transformed into Star Schema before inserting into MySQL   
@@ -94,7 +94,7 @@ Raw Data Sources :
 
 6. Platinum Layer
 
-![Platinum](images\platinum.png)
+![Platinum](images/platinum.png)
 
 - Receive corresponding partition from Gold layer then :
     - Data will be transformed into Star Schema before inserting into MySQL   
@@ -104,7 +104,7 @@ Raw Data Sources :
 
 ### Dashboard
 
-![Weekly](images\dashboard.png)
+![Weekly](images/dashboard.png)
 
 #### Insights
 - Payment type : Credit card is the most popular type of payment 
